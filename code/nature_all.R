@@ -46,7 +46,7 @@ res$online <- NA
 res$context<- NA 
 res$mentions <- NA
 
-for(i in 406:nrow(res)){
+for(i in 1:nrow(res)){
   pg <- read_html(res$url[i])
   
   temp <- pg %>% 
