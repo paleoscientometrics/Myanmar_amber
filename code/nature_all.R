@@ -1,13 +1,14 @@
 library(rvest)
 library(dplyr)
-# Get Nature (and sister journals) from Google Scholar
+# Get Nature (and sister journals)
 
-url <- "https://www.nature.com/search?q=paleontology%20&order=relevance&date_range=2015-2020&page="
+url <- "https://www.nature.com/search?order=relevance&article_type=research&subject=palaeontology&date_range=2015-2020&page="
 
 
 nature_links <- list()
 
-for(i in 1:6){
+pg_no <- 16
+for(i in 1:pg_no){
   pg <- read_html(paste0(url, i))
   
   links <- pg %>% 
@@ -18,11 +19,15 @@ for(i in 1:6){
   type <- trimws(gsub("\n", "", type))
   type <- unlist(lapply(type, function(x) trimws(strsplit(x, "\\|")[[1]][1])))
   
+  pub <- links %>% html_nodes(xpath='//*[@class="grid grid-7 mq640-grid-12 mt10"]')
+  
   
   res <- cbind(title=trimws(gsub("\n", "", links %>% 
                                    html_node("a") %>% html_text())), url=paste0("https://www.nature.com", links %>% 
                                                                                   html_node("a") %>% 
-                                                                                  html_attr("href")), type=type)
+                                                                                  html_attr("href")), type=type,
+               pubtitle = trimws(gsub("\n", "", pub %>%  html_node("a") %>%  html_text())), 
+               vol = trimws(pub %>% html_node("span") %>%  html_text()))
   
   nature_links[[i]] <- res
   
@@ -41,7 +46,7 @@ res$online <- NA
 res$context<- NA 
 res$mentions <- NA
 
-for(i in 1:nrow(res)){
+for(i in 406:nrow(res)){
   pg <- read_html(res$url[i])
   
   temp <- pg %>% 
@@ -50,10 +55,10 @@ for(i in 1:nrow(res)){
   
   res[i,c("received", "accepted", "published", "doi")] <- temp[c(1:3, length(temp))]
   
-  res$ethics[i] <- pg %>%
+  tryCatch({res$ethics[i] <- pg %>%
     html_nodes(xpath='//*[@id="ethics-content"]') %>% 
     html_node("p") %>% 
-    html_text()
+    html_text()}, error=function (error) return(invisible(NA)))
   
   # Metrics
   pg <- read_html(paste0(res$url[i], "/metrics"))
