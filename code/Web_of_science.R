@@ -27,6 +27,8 @@ pubs_per_yr <- ggplot(data=WOS_data_30, aes(Publication.Year)) +
   scale_y_continuous(breaks = seq(0, 144, 20), expand = c(0, 0))
 pubs_per_yr
 
+ggsave("./plots/pubs_per_yr_hist.pdf", plot = pubs_per_yr, width = 35, height = 12, units = "cm")
+
 
 
 ## Lollipop, lollipop, oh lolly lolly lollipop :)
