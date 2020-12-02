@@ -16,6 +16,8 @@ system("touch bib.bib") #this will be in the working directory
 
 res <- data.frame(reference_no = NA,
                   reftitle = NA)
+
+i = 1
 #find doi
 for(i in 1:nrow(refs)){
   bib <- NA
