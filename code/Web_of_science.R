@@ -27,7 +27,7 @@ pubs_per_yr <- ggplot(data=WOS_data_30, aes(Publication.Year)) +
   scale_y_continuous(breaks = seq(0, 144, 20), expand = c(0, 0))
 pubs_per_yr
 
-ggsave("./plots/pubs_per_yr_hist.pdf", plot = pubs_per_yr, width = 35, height = 12, units = "cm")
+ggsave("./plots/pubs_per_yr_hist.pdf", plot = pubs_per_yr, width = 30, height = 12, units = "cm")
 
 
 
@@ -41,14 +41,14 @@ head(pubs_year)
 
 
 pubs_per_yr_lollipop <- ggplot(data=pubs_year, aes(x=Year, y = total_pubs)) +
-  geom_segment(aes(x=Year, xend=Year, y = 0, yend = total_pubs), color="grey75", size=1.5) +
+  geom_segment(aes(x=Year, xend=Year, y = 0, yend = total_pubs), color="#C89F7B", size=1.5) +
   geom_point(colour = "#CE6B12", size = 5) + # Canva social science lesson colour scheme
-  theme_minimal() + labs(x = "Publication year", y = "Number of publications") +
+  theme_minimal() + labs(x = "", y = "Number of publications") +
   scale_x_discrete(breaks = seq(1990, 2020, 2)) +
   scale_y_continuous(limits = c(0, 155), breaks = seq(0, 155, 30), expand = c(0, 0))
 pubs_per_yr_lollipop
 
-ggsave("./plots/pubs_per_yr_lollipop.pdf", plot = pubs_per_yr_lollipop, width = 27, height = 15, units = "cm")
+ggsave("./plots/pubs_per_yr_lollipop.pdf", plot = pubs_per_yr_lollipop, width = 25, height = 15, units = "cm")
 
 
 
