@@ -29,6 +29,7 @@ trend_decade <- ggplot(google_data, aes(x=Month, y=hits)) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y")
 trend_decade
 
+ggsave("./plots/ggogletrends.pdf", plot = trend_decade, width = 30, height = 12, units = "cm")
 
 
 
