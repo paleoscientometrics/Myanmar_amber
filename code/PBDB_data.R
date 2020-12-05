@@ -65,7 +65,7 @@ amber_countries <- ggplot(data=countries_freq_a, aes(x = reorder(Country, -Freq)
   geom_segment(aes(x=reorder(Country, -Freq), xend=reorder(Country, -Freq), y = 0, yend = Freq), color="#C89F7B", size=1.5) +
   geom_point(colour = "#CE6B12", size = 5) + # Canva social science lesson colour scheme
   theme_minimal() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(x = "", y = "Frequency") +
-  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 10), expand = c(0, 0))
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 10))
 amber_countries
 
 #ggsave("./plots/pubs_per_yr_lollipop.pdf", plot = pubs_per_yr_lollipop, width = 25, height = 15, units = "cm")
@@ -100,11 +100,14 @@ non_amber_countries <- ggplot(data=na_countries_freq, aes(x = reorder(Country, -
   geom_segment(aes(x=reorder(Country, -Freq), xend=reorder(Country, -Freq), y = 0, yend = Freq), color="#6BB1A0", size=1.5) +
   geom_point(colour = "#31695C", size = 5) + # Canva social science lesson colour scheme
   theme_minimal() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(x = "", y = "Frequency") +
-  scale_y_continuous(limits = c(0, 42), breaks = seq(0, 40, 10), expand = c(0, 0))
+  scale_y_continuous(limits = c(0, 42), breaks = seq(0, 40, 10))
 non_amber_countries
 
 
-plot_grid(amber_countries, non_amber_countries, 
+amber_v_non_amber <- plot_grid(amber_countries, non_amber_countries, 
           nrow = 2, 
           labels = c('Amber', 'Non-amber'))
+
+ggsave("./plots/amber_v_non_amber.png", plot = amber_v_non_amber, width = 20, height = 20, units = "cm")
+
 
