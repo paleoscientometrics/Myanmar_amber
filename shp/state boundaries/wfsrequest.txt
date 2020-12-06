@@ -1,0 +1,1 @@
+http://geonode.themimu.info:80/geoserver/wfs?format_options=charset%3AUTF-8&typename=geonode%3Amyanmar_state_region_boundaries_with_sub_region&outputFormat=SHAPE-ZIP&version=1.0.0&service=WFS&request=GetFeature
