@@ -83,3 +83,23 @@ for(i in 1:nrow(res)){
 #write.csv(res, file.path("output", "nature_all_paleo.csv"), row.names = FALSE)
 openxlsx::write.xlsx(res,file.path("output", "nature_all_paleo.xlsx") ) #encoding purposes
 
+
+# Altmetrics --------------------------------------------------------------
+nature <- openxlsx::read.xlsx(file.path("output", "nature_all_paleo.xlsx"))
+nature$doi <- gsub("https://doi.org/", "", nature$doi)
+
+
+alt_mets <- list()
+
+for(i in 1:nrow(nature)){
+  tryCatch(
+    {
+      alt_temp <- rAltmetric::altmetrics(doi=nature$doi[i])
+      alt_mets[[i]] <- cbind(id=paste0("nat", i), 
+                             rAltmetric::altmetric_data(alt_temp))
+    }, 
+    error = function (error) message (error))
+}
+
+alt_mets <- alt_mets[lapply(alt_mets,length)>0] #remove empty containers
+write.csv(data.table::rbindlist(alt_mets, fill=TRUE), file.path("output", "alt_nature_all_paleo.csv"), row.names = FALSE)
