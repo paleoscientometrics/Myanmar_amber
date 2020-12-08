@@ -9,12 +9,11 @@ library(tidyverse)
 ## Import full dataset
 WOS_data <-  read.csv("./data/webofscience.csv", skip = 4, header = T)
 glimpse(WOS_data) # have a peek
-hist(WOS_data$Publication.Year, breaks = 200) # crude histogram of all data
 
 
 ## Subset to last 30 years:
 WOS_data_30 <- subset(WOS_data, Publication.Year >+ 1989)
-hist(WOS_data_30$Publication.Year, breaks = 30)
+#hist(WOS_data_30$Publication.Year, breaks = 30)
 
 
 ## Make it faaaaaaancy ;)
@@ -26,6 +25,8 @@ pubs_per_yr <- ggplot(data=WOS_data_30, aes(Publication.Year)) +
   scale_y_continuous(breaks = seq(0, 144, 20), expand = c(0, 0))
 pubs_per_yr
 ggsave("./plots/pubs_per_yr_hist.pdf", plot = pubs_per_yr, width = 30, height = 12, units = "cm")
+
+
 
 ## Lollipop, lollipop, oh lolly lolly lollipop :)
 
@@ -86,6 +87,30 @@ ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) +
 ggsave(file.path("plots", "PaleoPercs_timeline.svg"), 
        w=8, h=5
 )
+
+## PalAss
+
+theme_set(theme_minimal(base_size=14) %+replace%
+            theme(legend.title = element_text(
+              face="bold"),
+              axis.title = element_text(face="bold"),
+              legend.position="bottom",
+              plot.title = element_text(face="bold", hjust=0, size=16))
+)
+
+ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) + 
+  geom_line(size=1, col="#d07120ff") + 
+  geom_point(size=3, col="#d07120ff") +
+  geom_text(data=timeline, aes(x=Publication.Year, y=ra, label=Events), inherit.aes = FALSE)+
+  labs(x="", y="Number of Publications") +
+  scale_x_discrete(breaks = seq(1990, 2020, 5))
+
+ggsave(file.path("plots", "PalAss_timeline.pdf"), 
+       w=8, h=5
+)
+
+
+
 
 # Funding
 
