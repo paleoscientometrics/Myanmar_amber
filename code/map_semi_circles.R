@@ -64,7 +64,7 @@ theme_set(theme_void(base_size=10) %+replace%
               face="bold", size=8),
               legend.text = element_text(
                 size=8),
-              text=element_text(family="Roboto"),
+              #text=element_text(family="Roboto"),
               axis.title = element_text(face="bold"),
               legend.position="bottom",
               plot.background = element_rect(fill="#f5f5ef", colour=NA),
@@ -143,3 +143,39 @@ ggsave(file.path("plots", "map_semi_circles.svg"), p, w=8, height=5)
 svg(file.path("plots", "map_semi_circles_eu.svg"),width = 8, height=5)
 plot(map) 
 dev.off()
+
+
+
+# PalAss map --------------------------------------------------------------
+
+palass_map <- ggplot() +
+  geom_polygon(data=world_map, aes(x = long, y = lat, group = group), 
+               fill="#ded4c5ff", colour = "#f5f5ef", size=0.3) +
+  geom_polygon(data=world_map[world_map$region == "Myanmar",], aes(x = long, y = lat, group = group), 
+               fill="#dd9c69ff", colour = "#d07120ff", size=0.3) +
+  geom_arc_bar(data=aff.plot, aes(x0 = long, y0 = lat, r0 = 0, r = sqrt(count)*scale,
+                                  start = start, end = start + pi, fill = amber), alpha=0.9,
+               color = "#f5f5ef", size=0.3) +
+  labs(x="", y="") +
+  scale_fill_manual(values=c("#2d1b0cff", "#d07120ff"), labels=c("No", "Yes")) +
+  geom_text(data = aff.plot[aff.plot$aff_country %in% countries.lab &  duplicated(aff.plot$aff_country)== FALSE,],
+            aes(label = aff_country, x = long, y = lat + scale*sqrt(count) + .05),
+            size =2.5, vjust = 0, hjust=-0.2, fontface=2) +
+  
+  geom_text(data = aff.plot[aff.plot$amber == "no" & aff.plot$aff_country %in% countries.lab,],
+            aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#d07120ff", 
+            vjust = 4, hjust=0.5, fontface=2) +
+  geom_text(data = aff.plot[aff.plot$count > 20 & aff.plot$amber == "yes",],
+            aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#2d1b0cff", 
+            vjust = 2, hjust=0.5, fontface=2) +
+  coord_equal(ratio = 1.2)
+palass_map
+
+
+ggsave("./plots/map_amber_vs_non.pdf", plot = palass_map, width = 16, height = 10, units = "cm")
+
+
+
+
+
+

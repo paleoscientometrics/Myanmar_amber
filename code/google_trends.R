@@ -22,7 +22,7 @@ str(google_data) # have a peek
 
 
 trend_decade <- ggplot(google_data, aes(x=Month, y=hits)) +
-  geom_line(colour = "#CE6B12", size = 2) +
+  geom_line(colour = "#CE6B12", size = 1.5) +
   geom_ribbon(aes(ymin = 0, ymax = hits), fill = "#CE6B12", alpha = 0.4) +
   theme_minimal() + labs(x = "", y = "Number of hits") +
   scale_y_continuous(limits = c(0, 105), breaks = seq(0, 105, 20), expand = c(0, 0)) +

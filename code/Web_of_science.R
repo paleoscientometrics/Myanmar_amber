@@ -103,7 +103,7 @@ ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) +
   geom_point(size=3, col="#d07120ff") +
   labs(x="", y="Number of Publications")
 
-ggsave(file.path("plots", "PalAss_timeline.pdf"), 
+ggsave(file.path("plots", "PalAss_timeline.svg"), 
        w=10, h=5
 )
 
