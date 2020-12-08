@@ -101,12 +101,10 @@ theme_set(theme_minimal(base_size=14) %+replace%
 ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) + 
   geom_line(size=1, col="#d07120ff") + 
   geom_point(size=3, col="#d07120ff") +
-  geom_text(data=timeline, aes(x=Publication.Year, y=ra, label=Events), inherit.aes = FALSE)+
-  labs(x="", y="Number of Publications") +
-  scale_x_discrete(breaks = seq(1990, 2020, 5))
+  labs(x="", y="Number of Publications")
 
 ggsave(file.path("plots", "PalAss_timeline.pdf"), 
-       w=8, h=5
+       w=10, h=5
 )
 
 
