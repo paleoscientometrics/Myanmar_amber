@@ -64,10 +64,9 @@ theme_set(theme_void(base_size=10) %+replace%
               face="bold", size=8),
               legend.text = element_text(
                 size=8),
-              text=element_text(family="Roboto"),
+              text=element_text(family="Poppins"),
               axis.title = element_text(face="bold"),
               legend.position="bottom",
-              plot.background = element_rect(fill="#f5f5ef", colour=NA),
               plot.title = element_text(face="bold", hjust=0, size=14))
 )
 
@@ -76,29 +75,29 @@ countries.lab <- c(countries.lab, "Myanmar")
 
 p <- ggplot() +
   geom_polygon(data=world_map, aes(x = long, y = lat, group = group), 
-               fill="#ded4c5ff", colour = "#f5f5ef", size=0.3) +
+               fill="grey80", colour = "#ffffff", size=0.3) +
   geom_polygon(data=world_map[world_map$region == "Myanmar",], aes(x = long, y = lat, group = group), 
-               fill="#dd9c69ff", colour = "#d07120ff", size=0.3) +
+               fill="#dd211dff", colour = "#dd211dff", size=0.3) +
   geom_arc_bar(data=aff.plot, aes(x0 = long, y0 = lat, r0 = 0, r = sqrt(count)*scale,
                                   start = start, end = start + pi, fill = amber), alpha=0.9,
                color = "#f5f5ef", size=0.3) +
   labs(x="", y="", fill="Publications based \non amber inclusions",
        subtitle="A comparison between fieldwork done on amber vs non-amber fossils") +
-  scale_fill_manual(values=c("#2d1b0cff", "#d07120ff"), labels=c("No", "Yes")) +
+  scale_fill_manual(values=c("black", "#dd211dff"), labels=c("No", "Yes")) +
   geom_text(data = aff.plot[aff.plot$aff_country %in% countries.lab &  duplicated(aff.plot$aff_country)== FALSE,],
             aes(label = aff_country, x = long, y = lat + scale*sqrt(count) + .05),
-            size =2.5, vjust = 0, hjust=-0.2, family="Roboto", fontface=2) +
+            size =2.5, vjust = 0, hjust=-0.2, family="Poppins", fontface=2) +
   
   geom_text(data = aff.plot[aff.plot$amber == "no" & aff.plot$aff_country %in% countries.lab,],
-            aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#d07120ff", 
-            vjust = 4, hjust=0.5, family="Roboto", fontface=2) +
+            aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#dd211dff", 
+            vjust = 4, hjust=0.5, family="Poppins", fontface=2) +
   geom_text(data = aff.plot[aff.plot$count > 20 & aff.plot$amber == "yes",],
-            aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#2d1b0cff", 
-            vjust = 2, hjust=0.5, family="Roboto", fontface=2) +
+            aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#dd211dff", 
+            vjust = 2, hjust=0.5, family="Poppins", fontface=2) +
   coord_equal(ratio = 1.2) +
   ggtitle("Locations of researchers carrying out fieldwork in Myanmar")
 
-
+p
 
 # Europe
 
@@ -107,26 +106,26 @@ scale2 <- r2/max(sqrt(aff.plot$count))
 
 p_eu <- ggplot() +
   geom_polygon(data=world_map, aes(x = long, y = lat, group = group), 
-               fill="#ded4c5ff", colour = "#f5f5ef", size=0.5) +
+               fill="grey80", colour = "white", size=0.5) +
   geom_arc_bar(data=aff.plot, 
                aes(x0 = long, y0 = lat, r0 = 0, r = sqrt(count)*scale2,
                    start = start, end = start + pi, fill = amber), alpha=0.9,
                color = "#f5f5ef", size=0.5) +
   labs(x="", y="", fill="") +
-  scale_fill_manual(values=c("#2d1b0cff", "#d07120ff"), guide=FALSE)+
+  scale_fill_manual(values=c("black", "#dd211dff"), guide=FALSE)+
   geom_text(data = aff.plot[duplicated(aff.plot$aff_country)==FALSE & aff.plot$count > 5,],
             aes(label = aff_country, x = long, y = lat + scale*sqrt(count) + .05),
-            size =2.5, vjust = 4, hjust=-0.2, family="Roboto", fontface=2) +
+            size =2.5, vjust = 4, hjust=-0.2, family="Poppins", fontface=2) +
   
   # number labels for no amber
   geom_text(data = aff.plot[aff.plot$amber == "no"& aff.plot$count > 5,],
             aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), size=2, col="#d07120ff", 
-            vjust = -5, hjust=0.5, family="Roboto", fontface=2) +
+            vjust = -5, hjust=0.5, family="Poppins", fontface=2) +
   #number labels for amber
   geom_text(data = aff.plot[aff.plot$amber == "yes"& aff.plot$count > 5,],
             aes(label = count, x = long, y = lat + scale*sqrt(count) + .05), 
             size=2, col="#2d1b0cff", 
-            vjust = 0, hjust=1, family="Roboto", fontface=2) +
+            vjust = 0, hjust=1, family="Poppins", fontface=2) +
   coord_equal(ratio = 1.2, xlim=c(-9.5, 28.2), ylim=c(35, 61)) 
 
 layout=rbind(c(1, 1, 1,1,1,1),

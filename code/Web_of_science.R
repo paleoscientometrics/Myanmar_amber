@@ -58,15 +58,16 @@ theme_set(theme_minimal(base_size=14) %+replace%
               text=element_text(family="Roboto"),
               axis.title = element_text(face="bold"),
               legend.position="bottom",
-              plot.background = element_rect(fill="#f5f5ef", colour=NA),
+              plot.background = element_rect(fill="white", colour=NA),
               plot.title = element_text(face="bold", hjust=0, size=16))
 )
 
 timeline <- read.csv(file.path("data", "timeline.csv"))
 timeline <- timeline[timeline$Events != "",]
 
-timeline <- merge(WOS_summary, timeline[,c(1,2)], by.x="Publication.Year", by.y="Year")
-
+timeline <- merge(WOS_summary, timeline[,c(1,2)], by.x="Publication.Year", by.y="Year", all.y=TRUE)
+timeline$ra2 <- timeline$ra
+timeline$ra2[is.na(timeline$ra)] <- seq(1,100, length.out = 4)
 google <- read.csv(file.path("data", "google_trends.csv"), skip=2)
 colnames(google) <- c("Date", "Freq")
 google$year <- gsub(".*/(\\d+{4})$", "\\1", google$Date)
@@ -75,16 +76,16 @@ google_summary <- google %>% group_by(year) %>%
   summarise(n=sum(Freq))
 
 ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) + 
-  geom_line(size=1, col="#d07120ff") + 
-  geom_point(size=3, col="#d07120ff") +
-  geom_text(data=timeline, aes(x=Publication.Year, y=ra, label=Events), inherit.aes = FALSE)+
+  geom_line(size=1, col="#dd211d") + 
+  geom_point(size=3, col="#dd211d") +
+  geom_text(data=timeline, aes(x=Publication.Year, y=ra2, label=Events), inherit.aes = FALSE)+
   labs(x="Year of publication", 
        y="Number of Publications",
        subtitle = "\nMoving average of 3 years to take into consideration the publication process.\n") +
   ggtitle("Number of publications on amber fossils") 
 
-ggsave(file.path("plots", "PaleoPercs_timeline.svg"), 
-       w=8, h=5
+ggsave(file.path("plots", "RT_timeline2.svg"), 
+       w=16, h=5
 )
 
 # Funding
