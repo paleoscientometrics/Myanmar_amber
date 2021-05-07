@@ -17,6 +17,9 @@ glimpse(aff_data)
 ## add column "amber" to indicate if the ref title contains a mention of 'amber'
 aff_data$amber <- ifelse(grepl("amber", aff_data$reftitle, ignore.case = T), "yes", "no")
 
+## Save separate dataset for amber papers:
+amber_pubs <- subset(aff_data, amber == "yes")
+write_csv(amber_pubs, "./data/aff_data_amber_only.csv")
 
 
 

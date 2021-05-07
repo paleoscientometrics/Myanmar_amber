@@ -9,12 +9,11 @@ library(tidyverse)
 ## Import full dataset
 WOS_data <-  read.csv("./data/webofscience.csv", skip = 4, header = T)
 glimpse(WOS_data) # have a peek
-hist(WOS_data$Publication.Year, breaks = 200) # crude histogram of all data
 
 
 ## Subset to last 30 years:
 WOS_data_30 <- subset(WOS_data, Publication.Year >+ 1989)
-hist(WOS_data_30$Publication.Year, breaks = 30)
+#hist(WOS_data_30$Publication.Year, breaks = 30)
 
 
 ## Make it faaaaaaancy ;)
@@ -26,6 +25,8 @@ pubs_per_yr <- ggplot(data=WOS_data_30, aes(Publication.Year)) +
   scale_y_continuous(breaks = seq(0, 144, 20), expand = c(0, 0))
 pubs_per_yr
 ggsave("./plots/pubs_per_yr_hist.pdf", plot = pubs_per_yr, width = 30, height = 12, units = "cm")
+
+
 
 ## Lollipop, lollipop, oh lolly lolly lollipop :)
 
@@ -58,16 +59,15 @@ theme_set(theme_minimal(base_size=14) %+replace%
               text=element_text(family="Roboto"),
               axis.title = element_text(face="bold"),
               legend.position="bottom",
-              plot.background = element_rect(fill="white", colour=NA),
+              plot.background = element_rect(fill="#f5f5ef", colour=NA),
               plot.title = element_text(face="bold", hjust=0, size=16))
 )
 
 timeline <- read.csv(file.path("data", "timeline.csv"))
 timeline <- timeline[timeline$Events != "",]
 
-timeline <- merge(WOS_summary, timeline[,c(1,2)], by.x="Publication.Year", by.y="Year", all.y=TRUE)
-timeline$ra2 <- timeline$ra
-timeline$ra2[is.na(timeline$ra)] <- seq(1,100, length.out = 4)
+timeline <- merge(WOS_summary, timeline[,c(1,2)], by.x="Publication.Year", by.y="Year")
+
 google <- read.csv(file.path("data", "google_trends.csv"), skip=2)
 colnames(google) <- c("Date", "Freq")
 google$year <- gsub(".*/(\\d+{4})$", "\\1", google$Date)
@@ -76,17 +76,39 @@ google_summary <- google %>% group_by(year) %>%
   summarise(n=sum(Freq))
 
 ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) + 
-  geom_line(size=1, col="#dd211d") + 
-  geom_point(size=3, col="#dd211d") +
-  geom_text(data=timeline, aes(x=Publication.Year, y=ra2, label=Events), inherit.aes = FALSE)+
+  geom_line(size=1, col="#d07120ff") + 
+  geom_point(size=3, col="#d07120ff") +
+  geom_text(data=timeline, aes(x=Publication.Year, y=ra, label=Events), inherit.aes = FALSE)+
   labs(x="Year of publication", 
        y="Number of Publications",
        subtitle = "\nMoving average of 3 years to take into consideration the publication process.\n") +
   ggtitle("Number of publications on amber fossils") 
 
-ggsave(file.path("plots", "RT_timeline2.svg"), 
-       w=16, h=5
+ggsave(file.path("plots", "PaleoPercs_timeline.svg"), 
+       w=8, h=5
 )
+
+## PalAss
+
+theme_set(theme_minimal(base_size=14) %+replace%
+            theme(legend.title = element_text(
+              face="bold"),
+              axis.title = element_text(face="bold"),
+              legend.position="bottom",
+              plot.title = element_text(face="bold", hjust=0, size=16))
+)
+
+ggplot(data=WOS_summary, aes(x=Publication.Year, y=ra)) + 
+  geom_line(size=1, col="#d07120ff") + 
+  geom_point(size=3, col="#d07120ff") +
+  labs(x="", y="Number of Publications")
+
+ggsave(file.path("plots", "PalAss_timeline.svg"), 
+       w=10, h=5
+)
+
+
+
 
 # Funding
 
