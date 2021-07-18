@@ -1,0 +1,220 @@
+# https://www.webofscience.com/wos/woscc/summary/43de65e1-c86a-4ec1-aba3-91600773bb7d-01538dd3/relevance/1
+
+all <- read.csv("data/webofscience_amber.csv")
+all<- all[all$Publication.Year <2021,]
+nrow(all)
+
+all_summary <- setNames(data.frame(table(all$Publication.Year)),
+                        c("year", "count"))
+all_summary$year <- as.numeric(as.character(all_summary$year))
+
+
+all_summary$ra <- caTools::runmean(all_summary$count, 3, alg="C")
+
+plot(all_summary$year, all_summary$ra)
+
+library(segmented)
+
+my.lm <- lm(ra~year, data=all_summary)
+pscore.test(my.lm)
+davies.test(my.lm)
+
+
+my.seg <- segmented(my.lm, 
+                    seg.Z = ~ year, 
+                    psi = 2013)
+
+# additional breakpoints?
+pscore.test(my.seg,~year, more.break = T) 
+davies.test(my.seg)
+
+# get the breakpoints
+my.seg$psi
+
+
+my.fitted <- fitted(my.seg)
+my.model <- data.frame(year = all_summary$year, 
+                       count = all_summary$ra, fit=my.fitted)
+
+
+yrs <- round(my.seg$psi[,2])
+yrs
+
+my.model$cat <- NA
+my.model$cat[my.model$year <yrs] <- "1"
+my.model$cat[my.model$year >yrs] <- "2"
+my.model$cat[is.na(my.model$cat)] <- "3"
+
+my.lines <- round(my.seg$psi[, 2])
+
+
+ggplot(my.model) +
+  geom_vline(xintercept = my.lines, linetype = "dashed") +
+  # geom_line(data=my.model, aes(x=year,y=count), size=1) +
+  geom_line(aes(x=year, y=fit, col=cat)) +
+  geom_point(aes(x=year, y=count, col=cat))
+
+# Get affs
+affs <- list()
+
+for (i in 1:nrow(all)){
+  j <- all$Addresses[i]
+  
+  
+  nms <- regmatches(j, gregexpr("(?=\\[).*?(?<=\\])", j, perl=T))[[1]]
+  nms <- gsub("\\[|\\]", "", nms)
+  
+  
+  adds <- gsub("\\[.*?\\]", "", j)
+  adds <- strsplit(adds, ";")[[1]]
+  
+  affs[[i]] <- tryCatch(cbind.data.frame(id=i, nms, adds, nauthors=unlist(lapply(strsplit(nms, ";"), length))),
+                        error = function(e) return(NULL))
+}
+
+#remove NAs
+affs <- Filter(Negate(is.null), affs)
+length(affs)
+
+affs <- do.call(rbind, affs)
+affs$country <- sub('.*,\\s*', '', affs$adds)
+affs$country[grep("USA",affs$country)]<- "USA"
+affs$country[grep("Peoples R China",affs$country)] <- "China"
+
+yrs
+pre2015 <- which(all$Publication.Year < yrs)
+pre2015 <- affs[affs$id %in% pre2015,]
+pre2015 <- pre2015[,c("id", "country")]
+pre2015 <- unique(pre2015)
+
+table(pre2015$country) / length(unique(pre2015$id))
+
+post2015 <- which(all$Publication.Year > 2015)
+post2015 <- affs[affs$id %in% post2015,]
+post2015 <- post2015[,c("id", "country")]
+post2015 <- unique(post2015)
+
+table(post2015$country)
+table(post2015$country) / length(unique(post2015$id))
+
+
+### PLOT
+#####
+# At the breakpoint (break1), the segments b and c intersect
+
+#b0 + b1*x = c0 + c1*x
+
+b0 <- coef(my.seg)[[1]]
+b1 <- coef(my.seg)[[2]]
+
+# Important:
+# the coefficients are the differences in slope in comparison to the previous slope
+c1 <- coef(my.seg)[[2]] + coef(my.seg)[[3]]
+break1 <- my.seg$psi[[2]]
+
+#Solve for c0 (intercept of second segment):
+c0 <- b0 + b1 * break1 - c1 * break1
+
+# first line: 
+#y = b0 + b1*x
+#y = intercept1 + slope1 * x
+
+x1 <- 1995: (yrs-1)
+df1 <- all_summary[all_summary$year %in% x1,]
+mod1 <- lm(ra~year, df1)
+y1= predict(mod1, newdata = data.frame(year=x1))
+
+# second line:
+#y = c0 + c1*x
+#y = intercept2 + slope2 * x
+
+x2 <- 2015:2020
+df2 <- all_summary[all_summary$year %in% x2,]
+mod2 <- lm(ra~year + I(year^2), df2)
+x3 <- 2015:2021
+y2= predict(mod2, newdata = data.frame(year=x3))
+
+my.lines <- round(my.seg$psi[, 2])
+
+library(ggthemes)
+theme_set(theme_hc(base_size=14) %+replace%
+            theme(legend.title = element_text(
+              face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.title.y = element_text(angle=90),
+              legend.position="bottom",
+              plot.title = element_text(face="bold", hjust=0, size=16))
+)
+
+p <- ggplot() +
+  geom_vline(xintercept = my.lines, linetype = "dashed") +
+  # geom_line(data=my.model, aes(x=year,y=count), size=1) +
+  geom_line(data=data.frame(x1, y1, cat="1"), 
+            aes(x=x1, y=y1, col=cat), size=1) +
+  geom_line(data=data.frame(x3, y2, cat="2"), 
+            aes(x=x3, y=y2, col=cat), size=1) +
+  
+  scale_x_continuous(limits=c(1988, 2027), 
+                     breaks = seq(1990, 2020, 5)) +
+  labs(x="Year", y="Number of publications")
+
+labs <- read.csv("data/timeline2.csv")
+labs <- merge(labs, all_summary, by.x="x1", by.y="year", all.x=T, all.y=F)
+labs$ra[labs$x1%in%c(1994, 1995)] <- 0
+
+hj <- 0
+hj2 <- 1
+
+ny <- -10
+pal <- c("1"="#c06c13","2"="#ff9009","3"="#340e06")
+
+p1 <- p +
+  
+  # Adding annotations for years
+  geom_text(data=labs[labs$hj=="right",], aes(x=x1, y=y1, label=x1, hjust=hj), 
+            size=5, hjust=hj2, vjust=0.5, col=pal[1], fontface=2) +
+  geom_text(data=labs[labs$hj=="right",], aes(x=x1, y=y1, label=label2), 
+            size=3,  vjust=0.5,
+            nudge_y = ny, hjust=hj2, lineheight = 0.8, col=pal[1]) +
+  geom_segment(data=labs[labs$hj=="right",], aes(x=x1, xend=x1,y=ra, yend=y1-20),
+               col="darkgrey") +
+  geom_text(data=labs[labs$hj=="left",], aes(x=x1, y=y1, label=x1, hjust=hj), 
+            size=5, hjust=hj, vjust=1, col= pal[2], fontface=2) +
+  geom_text(data=labs[labs$hj=="left",], aes(x=x1, y=y1, label=label2), 
+            size=3,  vjust=1, col=pal[2],
+            nudge_y = ny, hjust=hj, lineheight = 0.8) +
+  geom_segment(data=labs[labs$hj=="left",], aes(x=x1, xend=x1,y=ra, yend=y1),
+               col="darkgrey") +
+  geom_point(data=my.model, aes(x=year, y=count, col=cat, shape=cat), 
+             size=4, fill="white", stroke=2) +
+  
+  scale_shape_manual(values=c("1"=16,"2"=16,"3"=21), guide=F)+
+  scale_color_manual(values=pal, guide=F) + 
+  # Add stats
+  annotate("text", x=2010, y=10, 
+           label= paste0("italic(R) ^ 2 ==", format(summary(mod1)$adj.r, digits=3)),
+           parse=T, hjust=hj, size=3)+
+  annotate("text", x=2010, y=2, 
+           label= paste0("italic(p) ==", format(anova(mod1)$'Pr(>F)'[1], digits=3)),
+           parse=T, hjust=hj, size=3) +
+  annotate("text", x=2025, y=10, 
+           label= paste0("italic(R) ^ 2 ==", format(summary(mod2)$adj.r, digits=3)),
+           parse=T, hjust=hj, size=3)+
+  annotate("text", x=2025, y=2, 
+           label= paste0("italic(p) ==", format(anova(mod2)$'Pr(>F)'[1], digits=3)),
+           parse=T, hjust=hj, size=3) +
+  annotate("curve", x=2017, xend=2014.5, y=15, yend=22, arrow = arrow(type = "closed", length = unit(0.1, "inches"))
+  ) +
+  annotate("text", x=2017, y=14, 
+           label="breakpoint\nidentified", size=3, hjust=hj,
+           lineheight=0.8) +
+  annotate("segment", x=2014, xend=2013, y=245, yend=245, 
+           arrow = arrow(type = "closed", length = unit(0.1, "inches")))
+
+
+
+x11(w=10, h=6);p1
+
+ggsave("plots/Fig_02.svg", p1, w=10, h=6)
+
+
