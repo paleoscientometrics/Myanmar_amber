@@ -30,20 +30,4 @@ affs$country <- sub('.*,\\s*', '', affs$adds)
 affs$country[grep("USA",affs$country)]<- "USA"
 affs$country[grep("Peoples R China",affs$country)] <- "China"
 
-yrs <- 2015
-pre2015 <- which(all$Publication.Year < yrs)
-pre2015 <- affs[affs$id %in% pre2015,]
-pre2015 <- pre2015[,c("id", "country")]
-pre2015 <- unique(pre2015)
-
-table(pre2015$country)
-table(pre2015$country) / length(unique(pre2015$id))
-
-post2015 <- which(all$Publication.Year > yrs)
-post2015 <- affs[affs$id %in% post2015,]
-post2015 <- post2015[,c("id", "country")]
-post2015 <- unique(post2015)
-
-table(post2015$country)
-table(post2015$country) / length(unique(post2015$id))
-
+affs_no_amber <- affs
