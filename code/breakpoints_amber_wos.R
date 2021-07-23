@@ -1,6 +1,7 @@
-# https://www.webofscience.com/wos/woscc/summary/43de65e1-c86a-4ec1-aba3-91600773bb7d-01538dd3/relevance/1
-
 all <- read.csv("data/webofscience_amber.csv")
+
+n2021 <- table(all$Publication.Year)["2021"]
+
 all<- all[all$Publication.Year <2021,]
 nrow(all)
 
@@ -116,7 +117,7 @@ p <- ggplot() +
 
 labs <- read.csv("data/timeline2.csv")
 labs <- merge(labs, all_summary, by.x="x1", by.y="year", all.x=T, all.y=F)
-labs$ra[labs$x1%in%c(1994, 1995)] <- 0
+labs$ra[labs$x1%in%c(1993, 1994, 1995)] <- 0
 
 hj <- 0
 hj2 <- 1
@@ -159,13 +160,14 @@ p1 <- p +
   annotate("text", x=2025, y=2, 
            label= paste0("italic(p) ==", format(anova(mod2)$'Pr(>F)'[1], digits=3)),
            parse=T, hjust=hj, size=3) +
-  annotate("curve", x=2017, xend=2014.5, y=15, yend=22, arrow = arrow(type = "closed", length = unit(0.1, "inches"))
+  annotate("segment", x=2016, xend=2014.5, y=10, yend=18, arrow = arrow(type = "closed", length = unit(0.1, "inches"))
   ) +
-  annotate("text", x=2017, y=14, 
+  annotate("text", x=2016.1, y=8,
            label="breakpoint\nidentified", size=3, hjust=hj,
            lineheight=0.8) +
   annotate("segment", x=2014, xend=2013, y=245, yend=245, 
-           arrow = arrow(type = "closed", length = unit(0.1, "inches")))
+           arrow = arrow(type = "closed", length = unit(0.1, "inches"))) +
+  annotate("point", x=2021, y=n2021, size=4, shape=21, stroke=2, col=pal[2])
 
 
 
