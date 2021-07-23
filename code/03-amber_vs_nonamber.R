@@ -12,7 +12,7 @@ affs <- rbind(cbind(affs_amber, amber="yes"),
       cbind(affs_no_amber, amber="no")
 )
 
-affs$country[affs$country %in% c("England", "Scotland", "Wales")] <- "United Kingdom"
+affs$country[affs$country %in% c("England", "Scotland", "Wales", "UK")] <- "United Kingdom"
 
 ## get data in shape
 affs <- affs %>%
@@ -22,6 +22,11 @@ affs <- affs %>%
 affs <- table(affs$country, affs$amber) %>%  data.frame()
 colnames(affs) <- c("country", "amber", "count")
 affs$country <- as.character(affs$country)
+
+affs2 <- affs %>% pivot_wider(id_cols=country, names_from=amber, values_from=count )
+
+t.test(affs2$no, affs2$yes/6, paired = T, alternative = "two.sided")
+wilcox.test(affs2$no, affs2$yes/6, paired = T, alternative = "two.sided")
 
 # Get centroid of locations
 world_map <- map_data("world")
