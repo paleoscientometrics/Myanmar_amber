@@ -66,5 +66,5 @@ kachin_map <- ggplot() +
   annotate("point", x=hukawng_valley[1], y=hukawng_valley[2], shape=1, size=8, stroke=1.2, colour="#834614ff") +
   annotate("text", x=hukawng_valley[1], y=hukawng_valley[2], label="Hukawng Valley", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2)
 
-ggsave(file.path("plots", "myanmar_loc.svg"), myanmar_loc, w=5)
-ggsave(file.path("plots", "kachin_loc.svg"), kachin_map,w=7)
+ggsave(file.path("plots", "myanmar_loc.svg"), myanmar_loc, w=3)
+ggsave(file.path("plots", "kachin_loc.svg"), kachin_map,w=8)

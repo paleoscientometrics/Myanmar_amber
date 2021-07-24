@@ -18,16 +18,23 @@ library(segmented)
 
 my.lm <- lm(ra~year, data=all_summary)
 pscore.test(my.lm)
-davies.test(my.lm)
 
+dt <- davies.test(my.lm)
+d1 <- c(dt$process[dt$process[,1]==dt$statistic,], p.value=dt$p.value)
 
 my.seg <- segmented(my.lm, 
                     seg.Z = ~ year, 
                     psi = 2013)
 
+d1 <- c(d1, actual=my.seg$psi[2])
+
 # additional breakpoints?
 pscore.test(my.seg,~year, more.break = T) 
-davies.test(my.seg)
+dt <- davies.test(my.seg)
+d2 <- c(dt$process[dt$process[,1]==dt$statistic,], p.value=dt$p.value, actual=NA)
+
+d <- rbind(d1, d2)
+write.csv(d, "output/breakpoint_wos.csv", row.names = F)
 
 # get the breakpoints
 my.seg$psi
@@ -79,6 +86,7 @@ c0 <- b0 + b1 * break1 - c1 * break1
 x1 <- 1995: (yrs-1)
 df1 <- all_summary[all_summary$year %in% x1,]
 mod1 <- lm(ra~year, df1)
+summary(mod1)
 y1= predict(mod1, newdata = data.frame(year=x1))
 
 # second line:

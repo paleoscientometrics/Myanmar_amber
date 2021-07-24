@@ -5,8 +5,8 @@ library(extrafont)
 library(grid)
 library(gridExtra)
 
-source("code/aff_amber_wos.R")
-source("code/aff_no_amber_wos.R")
+source("code/00-aff_amber_wos.R")
+source("code/00-aff_no_amber_wos.R")
 
 affs <- rbind(cbind(affs_amber, amber="yes"),
       cbind(affs_no_amber, amber="no")
@@ -22,11 +22,6 @@ affs <- affs %>%
 affs <- table(affs$country, affs$amber) %>%  data.frame()
 colnames(affs) <- c("country", "amber", "count")
 affs$country <- as.character(affs$country)
-
-affs2 <- affs %>% pivot_wider(id_cols=country, names_from=amber, values_from=count )
-
-t.test(affs2$no, affs2$yes/6, paired = T, alternative = "two.sided")
-wilcox.test(affs2$no, affs2$yes/6, paired = T, alternative = "two.sided")
 
 # Get centroid of locations
 world_map <- map_data("world")
