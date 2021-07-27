@@ -64,13 +64,44 @@ kachin_map <- ggplot() +
   
   #annotate
   annotate("point", x=hukawng_valley[1], y=hukawng_valley[2], shape=1, size=8, stroke=1.2, colour="#834614ff") +
-  annotate("text", x=hukawng_valley[1], y=hukawng_valley[2], label="Hukawng Valley", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2) +
-  annotate("text", x=98.5, y=26.7, label="KACHIN", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2) +
-  annotate("text", x=97, y=22.5, label="MYANMAR", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2, size=4.5) +
-  annotate("text", x=95, y=27.5, label="INDIA", colour="#9F9689ff", hjust=1.1, vjust=-1, fontface=2, size=4.5) +
-  annotate("text", x=100, y=27.5, label="CHINA", colour="#9F9689ff", hjust=1.1, vjust=-1, fontface=2, size=4.5)
-
+  annotate("text", x=hukawng_valley[1], y=hukawng_valley[2], label="Hukawng Valley", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2)
 
 
 ggsave(file.path("plots", "myanmar_loc.svg"), myanmar_loc, w=3)
-ggsave(file.path("plots", "kachin_loc2.svg"), kachin_map, w=8)
+ggsave(file.path("plots", "kachin_loc.svg"), kachin_map, w=8)
+
+
+## Myanmar and Kachin map:
+
+myanmar_map <- ggplot() +
+  geom_polygon(data=myanmar_map, aes(x = long, y = lat,group = group, fill = fill), col="#f5f5efff") +
+  
+  #fill kachin state
+  geom_polygon(data=kachin, aes(x = long, y = lat, group = group), colour = "#f5f5efff", fill = "#dfaa81ff") +
+  
+  #add locations
+  geom_point(data=locations, aes(x=x, y=y), size=5, col="#1d1207ff") +
+  geom_text(data=locations, aes(x=x, y=y, label=loc), size=4, 
+            col="#1d1207ff", hjust=-0.2, fontface=2) +
+  #geom_text(data=region.lab.data, aes(x=long, y=lat, label=region), fontface=2, size=3, col="#2d1b0cff") +
+  
+  scale_fill_manual(values=c("#ded4c5ff", "#e0c5acff"), guide=FALSE) +
+  coord_map(xlim=c(85, 105), ylim=c(22, 28.5)) +
+  
+  #annotate
+  #annotate("rect", xmin=93, xmax=100, ymin=22, ymax=28.5, fill=NA, col="#2d1b0cff", size=0.5) +
+  annotate("point", x=hukawng_valley[1], y=hukawng_valley[2], shape=1, size=8, stroke=1.2, colour="#834614ff") +
+  annotate("text", x=hukawng_valley[1], y=hukawng_valley[2], label="Hukawng Valley", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2) +
+  annotate("text", x=98.5, y=26.7, label="KACHIN", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2)
+  # annotate("text", x=97, y=22.5, label="MYANMAR", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2, size=4.5) +
+  # annotate("text", x=95, y=27.5, label="INDIA", colour="#9F9689ff", hjust=1.1, vjust=-1, fontface=2, size=4.5) +
+  # annotate("text", x=100, y=27.5, label="CHINA", colour="#9F9689ff", hjust=1.1, vjust=-1, fontface=2, size=4.5)
+myanmar_map
+
+
+
+
+
+
+
+
