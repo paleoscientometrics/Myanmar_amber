@@ -20,7 +20,7 @@ countries <- c("Myanmar", "China", "India", "Thailand", "Laos", "Bangladesh", "N
 
 myanmar_map <- map_data("world", region = countries)
 
-# Compute the centroid as the mean longitude and lattitude
+# Compute the centroid as the mean longitude and latitude
 # Used as label coordinate for country's names
 region.lab.data <- myanmar_map %>%
   group_by(region) %>%
@@ -64,7 +64,13 @@ kachin_map <- ggplot() +
   
   #annotate
   annotate("point", x=hukawng_valley[1], y=hukawng_valley[2], shape=1, size=8, stroke=1.2, colour="#834614ff") +
-  annotate("text", x=hukawng_valley[1], y=hukawng_valley[2], label="Hukawng Valley", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2)
+  annotate("text", x=hukawng_valley[1], y=hukawng_valley[2], label="Hukawng Valley", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2) +
+  annotate("text", x=98.5, y=26.7, label="KACHIN", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2) +
+  annotate("text", x=97, y=22.5, label="MYANMAR", colour="#834614ff", hjust=1.1, vjust=-1, fontface=2, size=4.5) +
+  annotate("text", x=95, y=27.5, label="INDIA", colour="#9F9689ff", hjust=1.1, vjust=-1, fontface=2, size=4.5) +
+  annotate("text", x=100, y=27.5, label="CHINA", colour="#9F9689ff", hjust=1.1, vjust=-1, fontface=2, size=4.5)
+
+
 
 ggsave(file.path("plots", "myanmar_loc.svg"), myanmar_loc, w=3)
-ggsave(file.path("plots", "kachin_loc.svg"), kachin_map,w=8)
+ggsave(file.path("plots", "kachin_loc2.svg"), kachin_map, w=8)
