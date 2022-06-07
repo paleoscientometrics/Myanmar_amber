@@ -1,3 +1,32 @@
+## ---------------------------
+##
+## "Ethics, law, and politics in palaeontological research: 
+##    The case of Myanmar amber"
+## Dunne, Raja, et al. (2022) Commun. Bio.
+##
+## Purpose of script: Creating Fig. S1 (trends in non-amber publications)
+##
+## Authors: Nussaïbah B. Raja, Emma M. Dunne
+##
+## Date Last Modified: 2022-06-07
+##
+## Copyright (c) Nussaïbah B. Raja & Emma M. Dunne (2022)
+## Email: nussaibah.raja.schoob@fau.de, dunne.emma.m@gmail.com
+##
+## ---------------------------
+##
+## Notes: N/A
+##   
+##
+## ---------------------------
+
+
+### Packages:
+library(tidyverse)
+library(segmented)
+library(ggthemes)
+
+
 #https://www.webofscience.com/wos/woscc/summary/2a75fa0c-3edc-4937-9823-a530d1e3be22-0152a0ec/relevance/1
 
 all <- read.csv("data/webofscience_no_amber.csv")

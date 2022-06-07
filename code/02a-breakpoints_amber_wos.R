@@ -21,13 +21,19 @@
 ## ---------------------------
 
 
-## Load Web of Science data
+### Packages:
+library(tidyverse)
+library(segmented)
+library(ggthemes)
+
+
+## Load Web of Science data - amber publications 
 all <- read.csv("./data/webofscience_amber.csv")
 
-# n2019 <- table(all$Publication.Year)["2019"]
-# n2020 <- table(all$Publication.Year)["2020"]
-# n2021 <- table(all$Publication.Year)["2021"]
+## Get total for 2022 as of June 7th 2022:
+n2022 <- table(all$Publication.Year)["2022"]
 
+## Subset dataset to only pubs from 2021 and younger
 all <- all[all$Publication.Year <2022,]
 nrow(all)
 
@@ -42,8 +48,6 @@ plot(all_summary$year, all_summary$ra)
 
 
 #### Stats testing
-
-library(segmented)
 
 ## fit linear model
 my.lm <- lm(ra~year, data=all_summary)
@@ -131,10 +135,9 @@ y2= predict(mod2, newdata = data.frame(year=x3))
 
 my.lines <- round(my.seg$psi[, 2])
 
-library(ggthemes)
+## Set plot theme
 theme_set(theme_hc(base_size=14) %+replace%
-            theme(legend.title = element_text(
-              face="bold"),
+            theme(legend.title = element_text(face="bold"),
               axis.title = element_text(face="bold"),
               axis.title.y = element_text(angle=90),
               legend.position="bottom",
@@ -153,7 +156,8 @@ p <- ggplot() +
                      breaks = seq(1990, 2020, 5)) +
   labs(x="Year", y="Number of publications")
 
-labs <- read.csv("data/timeline.csv")
+## Load info for important dates/events
+labs <- read.csv("./data/timeline.csv")
 labs <- merge(labs, all_summary, by.x="x1", by.y="year", all.x=T, all.y=F)
 labs$ra[labs$x1%in%c(1993, 1994, 1995)] <- 0
 
@@ -163,8 +167,9 @@ hj2 <- 1
 ny <- -10
 pal <- c("1"="#c06c13","2"="#ff9009","3"="#340e06")
 
+
+## Add text and stats to plot
 p1 <- p +
-  
   # Adding annotations for years
   geom_text(data=labs[labs$hj=="right",], aes(x=x1, y=y1, label=x1, hjust=hj), 
             size=5, hjust=hj2, vjust=0.5, col=pal[1], fontface=2) +
@@ -182,34 +187,36 @@ p1 <- p +
                col="darkgrey") +
   geom_point(data=my.model, aes(x=year, y=count, col=cat, shape=cat), 
              size=4, fill="white", stroke=2) +
-  
-  scale_shape_manual(values=c("1"=16,"2"=16,"3"=21), guide=F)+
-  scale_color_manual(values=pal, guide=F) + 
+  scale_shape_manual(values=c("1"=16,"2"=16,"3"=21), guide="none")+
+  scale_color_manual(values=pal, guide="none") + 
   # Add stats
-  annotate("text", x=2010, y=10, 
+  annotate("text", x=2005, y=60, 
            label= paste0("italic(R) ^ 2 ==", format(summary(mod1)$adj.r, digits=3)),
            parse=T, hjust=hj, size=3)+
-  annotate("text", x=2010, y=2, 
+  annotate("text", x=2005, y=52, 
            label= paste0("italic(p) ==", format(anova(mod1)$'Pr(>F)'[1], digits=3)),
            parse=T, hjust=hj, size=3) +
-  annotate("text", x=2025, y=10, 
+  annotate("text", x=2025, y=15, 
            label= paste0("italic(R) ^ 2 ==", format(summary(mod2)$adj.r, digits=3)),
            parse=T, hjust=hj, size=3)+
-  annotate("text", x=2025, y=2, 
+  annotate("text", x=2025, y=7, 
            label= paste0("italic(p) ==", format(anova(mod2)$'Pr(>F)'[1], digits=3)),
            parse=T, hjust=hj, size=3) +
-  annotate("segment", x=2016, xend=2014.5, y=10, yend=18, arrow = arrow(type = "closed", length = unit(0.1, "inches"))
-  ) +
+  annotate("segment", x=2016, xend=2014.5, y=10, yend=18, # breakpoint arrow
+           arrow = arrow(type = "closed", length = unit(0.1, "inches"))
+           ) +
   annotate("text", x=2016.1, y=8,
            label="breakpoint\nidentified", size=3, hjust=hj,
            lineheight=0.8) +
-  annotate("segment", x=2014, xend=2013, y=245, yend=245, 
-           arrow = arrow(type = "closed", length = unit(0.1, "inches"))) +
-  annotate("point", x=2021, y=n2021, size=4, shape=21, stroke=2, col=pal[2])
+  # annotate("segment", x=2014, xend=2013, y=230, yend=230, 
+  #          arrow = arrow(type = "closed", length = unit(0.1, "inches"))) +
+  annotate("point", x=2022, y=n2022, size=4, shape=21, stroke=2, col=pal[2]) +
+  annotate("text", x=2022, y=51,
+           label="Total publications\nin first half of year", size=3, hjust=hj, lineheight=0.8)
+p1
 
 
-
-x11(w=10, h=6);p1
+#x11(w=10, h=6);p1
 
 ggsave("plots/Fig_02.svg", p1, w=10, h=6)
 
