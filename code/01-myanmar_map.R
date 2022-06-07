@@ -1,3 +1,26 @@
+## ---------------------------
+##
+## "Ethics, law, and politics in palaeontological research: 
+##    The case of Myanmar amber"
+## Dunne, Raja, et al. (2022) Commun. Bio.
+##
+## Purpose of script: Creating Fig. 1 (map of Myanmar)
+##
+## Authors: Nussaïbah B. Raja
+##
+## Date Last Modified: 2022-06-07
+##
+## Copyright (c) Nussaïbah B. Raja, 2022
+## Email: nussaibah.raja.schoob@fau.de
+##
+## ---------------------------
+##
+## Notes: N/A
+##   
+##
+## ---------------------------
+
+
 library(ggplot2)
 library(rgdal)
 library(extrafont)
@@ -69,12 +92,5 @@ kachin_map <- ggplot() +
 
 ggsave(file.path("plots", "myanmar_loc.svg"), myanmar_loc, w=3)
 ggsave(file.path("plots", "kachin_loc.svg"), kachin_map, w=8)
-
-
-
-
-
-
-
 
 

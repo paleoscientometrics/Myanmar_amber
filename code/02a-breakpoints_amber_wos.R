@@ -1,24 +1,55 @@
-all <- read.csv("data/webofscience_amber.csv")
+## ---------------------------
+##
+## "Ethics, law, and politics in palaeontological research: 
+##    The case of Myanmar amber"
+## Dunne, Raja, et al. (2022) Commun. Bio.
+##
+## Purpose of script: Creating Fig. 2 (temporal trends and breakpoints)
+##
+## Authors: Nussaïbah B. Raja, Emma M. Dunne
+##
+## Date Last Modified: 2022-06-07
+##
+## Copyright (c) Nussaïbah B. Raja & Emma M. Dunne (2022)
+## Email: nussaibah.raja.schoob@fau.de, dunne.emma.m@gmail.com
+##
+## ---------------------------
+##
+## Notes: N/A
+##   
+##
+## ---------------------------
 
-n2021 <- table(all$Publication.Year)["2021"]
 
-all<- all[all$Publication.Year <2021,]
+## Load Web of Science data
+all <- read.csv("./data/webofscience_amber.csv")
+
+# n2019 <- table(all$Publication.Year)["2019"]
+# n2020 <- table(all$Publication.Year)["2020"]
+# n2021 <- table(all$Publication.Year)["2021"]
+
+all <- all[all$Publication.Year <2022,]
 nrow(all)
 
 all_summary <- setNames(data.frame(table(all$Publication.Year)),
                         c("year", "count"))
 all_summary$year <- as.numeric(as.character(all_summary$year))
 
-
+## rolling average
 all_summary$ra <- caTools::runmean(all_summary$count, 3, alg="C")
-
+## quick plot
 plot(all_summary$year, all_summary$ra)
+
+
+#### Stats testing
 
 library(segmented)
 
+## fit linear model
 my.lm <- lm(ra~year, data=all_summary)
 pscore.test(my.lm)
 
+## Davies test
 dt <- davies.test(my.lm)
 d1 <- c(dt$process[dt$process[,1]==dt$statistic,], p.value=dt$p.value)
 
@@ -34,7 +65,7 @@ dt <- davies.test(my.seg)
 d2 <- c(dt$process[dt$process[,1]==dt$statistic,], p.value=dt$p.value, actual=NA)
 
 d <- rbind(d1, d2)
-write.csv(d, "output/breakpoint_wos.csv", row.names = F)
+write.csv(d, "output/breakpoint_wos21.csv", row.names = F)
 
 # get the breakpoints
 my.seg$psi
@@ -62,8 +93,7 @@ ggplot(my.model) +
   geom_line(aes(x=year, y=fit, col=cat)) +
   geom_point(aes(x=year, y=count, col=cat))
 
-### PLOT
-#####
+### PLOT #####
 # At the breakpoint (break1), the segments b and c intersect
 
 #b0 + b1*x = c0 + c1*x
@@ -123,7 +153,7 @@ p <- ggplot() +
                      breaks = seq(1990, 2020, 5)) +
   labs(x="Year", y="Number of publications")
 
-labs <- read.csv("data/timeline2.csv")
+labs <- read.csv("data/timeline.csv")
 labs <- merge(labs, all_summary, by.x="x1", by.y="year", all.x=T, all.y=F)
 labs$ra[labs$x1%in%c(1993, 1994, 1995)] <- 0
 
