@@ -362,6 +362,7 @@ df2 <- res4[res4$year < 2014,] %>%
   group_by(from, to) %>% 
   summarise(weight=n()) 
 g2 <- graph_from_data_frame(df2, directed=F)
+
 x11();plot(g2,edge.arrow.size=.5, vertex.color="gold", vertex.size=3, 
      vertex.frame.color="gray", vertex.label.color="black", 
      vertex.label.cex=.5, vertex.label.dist=2, edge.curved=0.5,layout=layout_with_lgl)
