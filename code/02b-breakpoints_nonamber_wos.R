@@ -41,8 +41,7 @@ all_summary$ra <- caTools::runmean(all_summary$count, 3, alg="C")
 
 plot(all_summary$year, all_summary$ra)
 
-library(segmented)
-
+## Linear model
 my.lm <- lm(ra~year, data=all_summary)
 pscore.test(my.lm)
 dt <- davies.test(my.lm)
@@ -70,7 +69,7 @@ d3 <- c(dt$process[dt$process[,1]==dt$statistic,], p.value=dt$p.value, actual=NA
 
 
 d <- rbind(d1, d2, d3)
-write.csv(d, "output/breakpoint_wos_na.csv", row.names = F)
+write.csv(d, "output/breakpoint_wos_na21.csv", row.names = F)
 
 # get the breakpoints
 my.seg$psi
@@ -91,10 +90,10 @@ my.model$cat[is.na(my.model$cat)] <- "3"
 
 my.lines <- round(my.seg$psi[, 2])
 
-library(ggplot2)
+## Create plot
+
 pal <- c("1"="#c06c13","2"="#ff9009","3"="#340e06")
 
-library(ggthemes)
 theme_set(theme_hc(base_size=14) %+replace%
             theme(legend.title = element_text(
               face="bold"),
@@ -131,3 +130,4 @@ ggplot(my.model) +
   labs(x="Year", y="Number of publications")
 
 ggsave("plots/Supplement/Fig_S1_breakpoint.png", w=6, h=4)
+

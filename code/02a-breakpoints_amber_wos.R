@@ -216,7 +216,7 @@ p1 <- p +
 p1
 
 
-#x11(w=10, h=6);p1
+x11(w=10, h=6);p1
 
 ggsave("plots/Fig_02.svg", p1, w=10, h=6)
 

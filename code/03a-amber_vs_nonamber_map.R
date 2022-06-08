@@ -1,3 +1,26 @@
+## ---------------------------
+##
+## "Ethics, law, and politics in palaeontological research: 
+##    The case of Myanmar amber"
+## Dunne, Raja, et al. (2022) Commun. Bio.
+##
+## Purpose of script: Creating Fig. 3 (map of authors)
+##
+## Author: Nussaïbah B. Raja
+##
+## Date Last Modified: 2022-06-08
+##
+## Copyright (c) Nussaïbah B. Raja (2022)
+## Email: nussaibah.raja.schoob@fau.de
+##
+## ---------------------------
+##
+## Notes: N/A
+##   
+##
+## ---------------------------
+
+
 ## Load packages
 library(tidyverse)
 library(ggforce)
@@ -5,6 +28,8 @@ library(extrafont)
 library(grid)
 library(gridExtra)
 
+
+## Run script for organising affiliation data
 source("code/00-aff_amber_wos.R")
 source("code/00-aff_no_amber_wos.R")
 
@@ -16,7 +41,7 @@ affs$country[affs$country %in% c("England", "Scotland", "Wales", "UK")] <- "Unit
 
 ## get data in shape
 affs <- affs %>%
-  select(id, country, amber) %>% 
+  dplyr::select(id, country, amber) %>% 
   distinct()
 
 affs <- table(affs$country, affs$amber) %>%  data.frame()
@@ -108,7 +133,7 @@ p_eu <- ggplot() +
                    start = start, end = start + pi, fill = amber), alpha=0.9,
                color = "#f5f5ef", size=0.5) +
   labs(x="", y="", fill="") +
-  scale_fill_manual(values=c("#2d1b0cff", "#d07120ff"), guide=FALSE)+
+  scale_fill_manual(values=c("#2d1b0cff", "#d07120ff"), guide="none")+
   geom_text(data = aff.plot[duplicated(aff.plot$country)==FALSE & aff.plot$count > 5,],
             aes(label = country, x = long, y = lat + scale2*sqrt(count) + .05),
             size =2.5, vjust = 4, hjust=-0.2, family="Roboto", fontface=2) +
@@ -137,7 +162,7 @@ map <- grid.arrange(p, p_eu,
 ggsave(file.path("plots", "map_semi_circles.svg"), p, w=8, height=5)
 ggsave(file.path("plots", "map_semi_circles_eu.svg"), p_eu, w=(8/3), height=(5*2/3))
 
-svg(file.path("plots", "map_semi_circles_combined.svg"),width = 8, height=5)
+svg(file.path("plots", "Fig_03.svg"),width = 8, height=5)
 plot(map) 
 dev.off()
 

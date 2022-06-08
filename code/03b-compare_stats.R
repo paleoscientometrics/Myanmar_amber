@@ -1,4 +1,30 @@
+## ---------------------------
+##
+## "Ethics, law, and politics in palaeontological research: 
+##    The case of Myanmar amber"
+## Dunne, Raja, et al. (2022) Commun. Bio.
+##
+## Purpose of script: Stats tests on affiliation data
+##
+## Author: Nussaïbah B. Raja
+##
+## Date Last Modified: 2022-06-08
+##
+## Copyright (c) Nussaïbah B. Raja (2022)
+## Email: nussaibah.raja.schoob@fau.de
+##
+## ---------------------------
+##
+## Notes: N/A
+##   
+##
+## ---------------------------
 
+## Load packages:
+library(tidyverse)
+
+
+## Load data
 amber <- read.csv("data/webofscience_amber.csv")
 amber <- setNames(data.frame(table(amber$Publication.Year)),
                         c("year", "amber"))
@@ -24,9 +50,8 @@ period$fold[i] <- mean(df$ratio)
 
 period$fold
 
-###
-library(tidyverse)
 
+## Run scripts for organising the data
 source("code/00-aff_amber_wos.R")
 source("code/00-aff_no_amber_wos.R")
 
@@ -46,7 +71,7 @@ for(i in 1:nrow(period)){
 ## get data in shape
 temp <- affs %>%
   filter(Publication.Year >=period$start[i] & Publication.Year <=period$end[i]) %>% 
-  select(id, country, amber) %>% 
+  dplyr::select(id, country, amber) %>% 
   distinct()
 
 temp <- table(temp$country, temp$amber) %>%  data.frame()

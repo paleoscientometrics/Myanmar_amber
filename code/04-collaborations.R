@@ -1,18 +1,45 @@
-# Load library ------------------------------------------------------------
+## ---------------------------
+##
+## "Ethics, law, and politics in palaeontological research: 
+##    The case of Myanmar amber"
+## Dunne, Raja, et al. (2022) Commun. Bio.
+##
+## Purpose of script: Creating Figs. S2, S3, 4, and S4
+##
+## Author: Nussaïbah B. Raja
+##
+## Date Last Modified: 2022-06-08
+##
+## Copyright (c) Nussaïbah B. Raja (2022)
+## Email: nussaibah.raja.schoob@fau.de
+##
+## ---------------------------
+##
+## Notes: N/A
+##   
+##
+## ---------------------------
+
+
+## Packages
 library(tidyverse)
 library(circlize)
 library(patchwork)
 library(ggthemes)
 library(ggpubr)
+library(igraph)
 
-# Load data ---------------------------------------------------------------
+
+## Load data 
 source("code/00-aff_amber_wos.R")
 pal <- c("#c06c13","#ff9009","#340e06")
 
 head(affs)
 affs$country[affs$country %in% c("England", "Wales", "Scotland", "UK")] <- "United Kingdom"
 
-# Get clean list of authors with country and year of publication ----------
+
+
+# Get clean list of authors with country and year of publication
 
 res <- list()
 
@@ -31,7 +58,7 @@ for(i in 1:length(ids)){
 }
 
 
-# Extract first authors ---------------------------------------------------
+## Extract first authors 
 firstauthors <- unlist(lapply(res, function(x) x$country[1]))
 firstyears <- unlist(lapply(res, function(x) x$year[1]))
 
@@ -78,10 +105,11 @@ p1+p2 +
   plot_annotation(tag_prefix = "(", tag_levels = "a", tag_suffix = ")")
 dev.off()
 
-# Outlier detection -------------------------------------------------------
 
-first2 <- first1 %>% pivot_wider(id_cols=lead, names_from=period, values_from=n) %>% 
-  arrange(desc(post, desc(pre)))
+## Outlier detection 
+
+first2 <- first1 %>% pivot_wider(id_cols=lead, names_from=period, values_from=n) #%>% 
+  #arrange(desc(post, desc(pre)))
 
 first1$period <- factor(first1$period, levels=c("post", "pre"))
 
@@ -90,7 +118,7 @@ p3 <- ggplot(first1, aes(x = period, y = n, col=period)) +
   coord_flip() +
   scale_color_manual(values=pal[2:1]) +
   geom_jitter(size = 2, alpha = 0.25, 
-              position = position_jitter(seed = 1000, width = 0.2)) +
+              position = position_jitter(seed = 123, width = 0.2)) +
   scale_x_discrete(labels=c("post-2014","pre-2014")) +
   labs(y="Number of publications", x="") +
   theme(legend.position = "none")
@@ -102,14 +130,14 @@ outx <- rbind(setNames(first2[first2$pre %in% x1$out,c("lead", "pre")], c("coun"
               setNames(first2[first2$post %in% x2$out,c("lead", "post")], c("coun", "n")))
 
 outx$period <- c("pre", "post", "post", "post", "post", "post")
-outx$y <- c(2.1, 1.2,1.1,1,0.8,0.9)
+outx$y <- c(1.93, 1.05, 1.18, 0.8, 1.09, 0.9)
 
-outx$n[2] <- 310
+outx$n[2] <- 380
 p3 <- p3 + annotate("text", y=outx$n, x=outx$y, label=outx$coun, size=3, hjust=-0.3)
-ggsave("plots/Supplement/Fig_S3.svg", p3, w=5, h=4)
+ggsave("plots/Supplement/Fig_S3.png", p3, w=6, h=4)
 
 
-# Collaborations ----------------------------------------------------------
+## Collaborations
 
 res3 <- list()
 
@@ -137,7 +165,7 @@ colnames(res3) <- c("from", "to", "year")
 res3 <- na.omit(res3)
 
 
-# Compute numbers ---------------------------------------------------------
+## Compute numbers
 res4 <- do.call(rbind,
         lapply(res, function (x) cbind.data.frame(n=length(unique(x$country)), 
                                        year=x$year[1]))
@@ -149,7 +177,7 @@ incountry1 <- do.call(rbind, res[which(res4$n ==1 & res4$year < 2014)]) %>%
   group_by(country) %>% 
   tally() %>% 
   arrange(desc(n)) %>% 
-  left_join(first2 %>%  select(pre, country=lead)) %>% 
+  left_join(first2 %>%  dplyr::select(pre, country=lead)) %>% 
   mutate(prop=n/pre)
 mean(incountry1$prop)
 
@@ -158,9 +186,8 @@ incountry <- do.call(rbind, res[which(res4$n ==1 & res4$year >= 2014)]) %>%
   group_by(country) %>% 
   tally() %>% 
   arrange(desc(n)) %>% 
-  left_join(first2 %>%  select(post, country=lead)) %>% 
+  left_join(first2 %>%  dplyr::select(post, country=lead)) %>% 
   mutate(prop=n/post)
-
 mean(incountry$prop)
 
 #### single author
@@ -234,7 +261,7 @@ preedges <- res3 %>%
   ungroup()
 
 df1 <- preedges %>% 
-  select(from, to, value=weight)# %>%   filter(from != to)
+  dplyr::select(from, to, value=weight)# %>%   filter(from != to)
 
 order_regs <- data.frame(edge=c(df1$from, df1$to))
 order_regs$region <- countrycode::countrycode(order_regs$edge, "country.name", "continent")
@@ -257,7 +284,7 @@ postedges <- res3 %>%
   ungroup()
 
 df2 <- postedges %>% 
-  select(from, to, value=weight) #%>%  filter(from != to)
+  dplyr::select(from, to, value=weight) #%>%  filter(from != to)
 
 order_regs2 <- data.frame(edge=c(df2$from, df2$to))
 order_regs2$region <- countrycode::countrycode(order_regs2$edge, "country.name", "continent")
@@ -287,6 +314,9 @@ mtext("(b)",side=3,line=-1.5,
       cex=0.8)
 dev.off()
 
+
+
+
 # General collaborations --------------------------------------------------
 res4 <- list()
 
@@ -315,7 +345,7 @@ res4 <- na.omit(res4)
 library(igraph)
 
 df1 <- res4[res4$year >=2014,] %>% 
-  select(from, to) %>% 
+  dplyr::select(from, to) %>% 
   group_by(from, to) %>% 
   summarise(weight=n()) 
 g1 <- graph_from_data_frame(df1, directed=F)
