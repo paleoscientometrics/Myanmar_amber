@@ -32,6 +32,8 @@ all <- read.csv("./data/webofscience_amber.csv")
 
 ## Get total for 2022 as of June 7th 2022:
 n2022 <- table(all$Publication.Year)["2022"]
+# n2021 <- table(all$Publication.Year)["2021"]
+# n2020 <- table(all$Publication.Year)["2020"]
 
 ## Subset dataset to only pubs from 2021 and younger
 all <- all[all$Publication.Year <2022,]
