@@ -19,7 +19,8 @@ nrow(all)
 affs <- list()
 
 for (i in 1:nrow(all)){
-  j <- all$Addresses[i]
+  #j <- all$Addresses[i]
+  j <- iconv(all$Addresses[i], from = "", to = "UTF-8", sub = "")
   
   
   nms <- regmatches(j, gregexpr("(?=\\[).*?(?<=\\])", j, perl=T))[[1]]
@@ -47,4 +48,5 @@ all$id <- 1:nrow(all)
 affs <- merge(affs, all[,c("id", "Publication.Year")])
 
 affs_amber <- affs
+length(affs_amber)
 
