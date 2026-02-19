@@ -22,14 +22,14 @@
 
 
 library(ggplot2)
-library(rgdal)
+library(sf)
 library(extrafont)
 library(dplyr)
 
 loadfonts()
 
 # Data ---------------------------------------------------------------------
-myanmar_provinces <- readOGR(file.path("shp", "state boundaries"))
+myanmar_provinces <- st_read(file.path("shp", "state boundaries"))
 kachin <- myanmar_provinces[myanmar_provinces$ST == "Kachin",]
 
 hukawng_valley <- c(96.558889,26.438333) 
